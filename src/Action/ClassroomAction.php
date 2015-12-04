@@ -1,15 +1,16 @@
 <?php
 
-namespace Teacher\Action;
+namespace Classroom\Action;
 
+use Classroom\Entity\ClassroomEntity;
 use Common\Http\RestfulActionTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Teacher\Service\TeacherService;
+use Classroom\Service\ClassroomService;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Expressive\Router\RouterInterface;
 
-class TeacherAction
+class ClassroomAction
 {
     use RestfulActionTrait;
 
@@ -19,20 +20,20 @@ class TeacherAction
     private $router;
 
     /**
-     * @var TeacherService
+     * @var ClassroomService
      */
-    private $teacherService;
+    private $classroomService;
 
     /**
      * @param RouterInterface $router
-     * @param TeacherService $teacherService
+     * @param ClassroomService $classroomService
      */
     public function __construct(
         RouterInterface $router,
-        TeacherService $teacherService
+        ClassroomService $classroomService
     ) {
-        $this->router         = $router;
-        $this->teacherService = $teacherService;
+        $this->router           = $router;
+        $this->classroomService = $classroomService;
     }
 
     /**
@@ -46,18 +47,20 @@ class TeacherAction
         ResponseInterface $response,
         callable $next = null
     ) {
-        $teacher = $this->teacherService->findById(
+        /** @var ClassroomEntity $classroom */
+        $classroom = $this->classroomService->findById(
             $request->getAttribute($this->identifier)
         );
 
-        if (!$teacher->isValid()) {
+        if (!$classroom->isValid()) {
             return $response->withStatus(404, 'Not Found');
         }
 
         return new JsonResponse([
-            'id'         => $teacher->getId(),
-            'first_name' => $teacher->getFirstName(),
-            'last_name'  => $teacher->getLastName()
+            'id'         => $classroom->getId(),
+            'teacher_id' => $classroom->getTeacherId(),
+            'student_id' => $classroom->getStudentId(),
+            'school_id'  => $classroom->getSchoolId()
         ]);
     }
 }
