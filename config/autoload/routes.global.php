@@ -10,7 +10,7 @@ return [
     'routes' => [
         [
             'name' => 'api.classroom',
-            'path' => '/api/classroom[/:id]',
+            'path' => '/api/teacher/classroom[/:id]',
             'middleware' => Classroom\Action\ClassroomAction::class,
             'allowed_methods' => ['GET'],
         ],

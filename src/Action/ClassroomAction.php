@@ -47,20 +47,23 @@ class ClassroomAction
         ResponseInterface $response,
         callable $next = null
     ) {
-        /** @var ClassroomEntity $classroom */
-        $classroom = $this->classroomService->findById(
-            $request->getAttribute($this->identifier)
-        );
+        $classroomCollection = $this->classroomService->findAll(array(
+            'teacher_id' => $request->getAttribute($this->identifier)
+        ));
 
-        if (!$classroom->isValid()) {
+        if (empty($classroomCollection)) {
             return $response->withStatus(404, 'Not Found');
         }
 
-        return new JsonResponse([
-            'id'         => $classroom->getId(),
-            'teacher_id' => $classroom->getTeacherId(),
-            'student_id' => $classroom->getStudentId(),
-            'school_id'  => $classroom->getSchoolId()
-        ]);
+        $data = array();
+        foreach ($classroomCollection as $classroom) {
+            /** @var ClassroomEntity $classroom */
+            $data[] = array(
+                'teacher_id' => $classroom->getTeacherid(),
+                'student_id' => $classroom->getStudentid()
+            );
+        }
+
+        return new JsonResponse($data);
     }
 }
